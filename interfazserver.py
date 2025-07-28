@@ -5,18 +5,16 @@ import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 from datetime import datetime
-import unicodedata  # Para normalizar texto y quitar tildes
+import unicodedata  
 
 DB_FILE = "registros.db"
 
-# Función para quitar tildes y normalizar texto
 def quitar_tildes(texto):
     return ''.join(
         c for c in unicodedata.normalize('NFD', texto)
         if unicodedata.category(c) != 'Mn'
     )
 
-# Crear tabla si no existe
 conn = sqlite3.connect(DB_FILE)
 cursor = conn.cursor()
 cursor.execute('''CREATE TABLE IF NOT EXISTS registros (
@@ -27,7 +25,6 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS registros (
 conn.commit()
 conn.close()
 
-# Servidor HTTP
 class RequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
@@ -51,29 +48,24 @@ def start_server():
     server = HTTPServer(("", 5000), RequestHandler)
     server.serve_forever()
 
-# Interfaz gráfica
 class ElevadorGUI:
     def __init__(self, root):
         self.root = root
         self.root.title("Interfaz del Elevador")
 
-        # Recuadros superiores
         tk.Label(root, text="Descripción:", bg="#b57edc", fg="white", font=("Arial", 12, "bold"), width=25).grid(row=0, column=0, padx=5, pady=5)
         tk.Label(root, text="Funcionamiento de un Elevador para Proyecto Final usando base de datos e interfaz gráfica para Programación Orientada a Objetos (POO)", wraplength=400, justify="left", bg="#e6ccf5", font=("Arial", 11), width=60).grid(row=0, column=1, padx=5, pady=5)
 
         tk.Label(root, text="Número Total de Pisos:", bg="#b57edc", fg="white", font=("Arial", 12, "bold"), width=25).grid(row=1, column=0, padx=5, pady=5)
         tk.Label(root, text="3 Pisos Disponibles", bg="#e6ccf5", font=("Arial", 11), width=60).grid(row=1, column=1, padx=5, pady=5)
 
-        # Botón colapsable
         self.caracteristicas_frame = None
         self.caracteristicas_visible = False
         self.toggle_button = tk.Button(root, text="Características:", bg="#66cc66", font=("Arial", 12, "bold"), command=self.toggle_caracteristicas)
         self.toggle_button.grid(row=2, column=0, columnspan=2, pady=10)
 
-        # Título de la tabla
         tk.Label(root, text="BASE DE DATOS DEL ELEVADOR", font=("Arial", 16, "bold"), fg="#004080").grid(row=3, column=0, columnspan=2, pady=(10, 0))
 
-        # Tabla
         self.tree = ttk.Treeview(root, columns=("piso", "hora", "tipo"), show="headings")
         self.tree.heading("piso", text="Piso")
         self.tree.heading("hora", text="Hora")
@@ -83,7 +75,6 @@ class ElevadorGUI:
         self.tree.column("tipo", width=200)
         self.tree.grid(row=4, column=0, columnspan=2, padx=10, pady=10)
 
-        # Botones inferiores
         resumen_btn = tk.Button(root, text="Resumen de Datos", bg="#99ccff", font=("Arial", 12, "bold"), command=self.mostrar_resumen)
         resumen_btn.grid(row=5, column=0, padx=10, pady=10)
 
